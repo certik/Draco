@@ -130,20 +130,3 @@ target_include_directories( Lib_dsxx
 install( TARGETS Lib_dsxx EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 install( FILES ${headers} ${template_implementations} DESTINATION
   ${DBSCFGDIR}include/ds++ )
-
-# ---------------------------------------------------------------------------- #
-# Unit tests
-# ---------------------------------------------------------------------------- #
-
-if( BUILD_TESTING )
-   add_subdirectory( test )
-endif()
-if( WIN32 )
-  add_subdirectory( bin )
-endif()
-
-# ---------------------------------------------------------------------------- #
-# Autodoc
-# ---------------------------------------------------------------------------- #
-
-process_autodoc_pages()

@@ -51,28 +51,11 @@ add_component_library(
 target_include_directories( Lib_c4
   PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
 
-# xthi, ythi binaries
-if( NOT APPLE )
-  add_subdirectory( bin )
-endif()
-
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 install( TARGETS Lib_c4 EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/c4 )
-
-# ---------------------------------------------------------------------------- #
-# Unit tests
-# ---------------------------------------------------------------------------- #
-if( BUILD_TESTING )
- add_subdirectory( test )
-endif()
-
-# ---------------------------------------------------------------------------- #
-# Autodoc
-# ---------------------------------------------------------------------------- #
-process_autodoc_pages()
 
 #------------------------------------------------------------------------------#
 # End c4/CMakeLists.txt

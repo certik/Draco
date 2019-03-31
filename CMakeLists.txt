@@ -91,6 +91,7 @@ dbsSetupStaticAnalyzers()
 
 # Find any globally required libraries
 include( FeatureSummary )
+set( DRACO_C4 "SCALAR" CACHE STRING "no mpi" FORCE)
 include( vendor_libraries )
 setupVendorLibraries()
 
@@ -98,37 +99,7 @@ setupVendorLibraries()
 # Build Draco components:
 #
 add_subdirectory( src )
-add_subdirectory( autodoc ) # This must be processed after 'src'
 add_subdirectory( config )  # This must be processed after 'src'
-
-#
-# Dashboard/Regression setup
-#
-# CTest/CDash custom configuration file
-configure_file(
-  ${PROJECT_SOURCE_DIR}/CTestCustom.cmake
-  ${PROJECT_BINARY_DIR}/CTestCustom.cmake
-  COPYONLY )
-
-# install top level documents
-install(
-  FILES ChangeLog LICENSE.md README.md
-  DESTINATION ${CMAKE_INSTALL_PREFIX} )
-
-# Add support for the 'uninstall' target
-configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/config/cmake_uninstall.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-  @ONLY )
-add_custom_target( uninstall
-  COMMAND "${CMAKE_COMMAND}" -P
-          "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" )
-
-# Export targets
-install(
-  EXPORT draco-targets
-  DESTINATION cmake/draco
-  EXPORT_LINK_INTERFACE_LIBRARIES )
 
 ##---------------------------------------------------------------------------##
 ## End of CMakeLists.txt
