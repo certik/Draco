@@ -79,9 +79,9 @@ endmacro()
 ##---------------------------------------------------------------------------##
 macro( query_topology )
 
-# These cmake commands, while useful, don't provide the topology detail that we 
+# These cmake commands, while useful, don't provide the topology detail that we
 # are interested in (i.e. number of sockets per node). We could use the results
-# of these queries to know if hyperthreading is enabled (if logical != physical 
+# of these queries to know if hyperthreading is enabled (if logical != physical
 # cores)
 # - cmake_host_system_information(RESULT MPI_PHYSICAL_CORES
 #   QUERY NUMBER_OF_PHYSICAL_CORES)
@@ -303,6 +303,23 @@ WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
 
 endmacro()
 
+##---------------------------------------------------------------------------##
+## Setup Spectrum MPI wrappers (Sierra, Rzansel, Rzmanta, Ray)
+##---------------------------------------------------------------------------##
+macro( setupSpectrumMPI )
+
+  set( MPI_FLAVOR "spectrum" CACHE STRING "Flavor of MPI.")
+
+  # Find cores/cpu, cpu/node, hyperthreading
+  query_topology()
+
+  set( MPIEXEC_OMP_POSTFLAGS ${MPIEXEC_OMP_POSTFLAGS}
+    CACHE STRING "extra mpirun flags (list)." FORCE )
+  mark_as_advanced( MPI_CPUS_PER_NODE MPI_CORES_PER_CPU
+    MPI_PHYSICAL_CORES MPI_MAX_NUMPROCS_PHYSICAL MPI_HYPERTHREADING )
+
+endmacro()
+
 #------------------------------------------------------------------------------#
 # Setup MPI when on Linux
 #------------------------------------------------------------------------------#
@@ -337,23 +354,6 @@ macro( setupMPILibrariesUnix )
         set( MPIEXEC_NUMPROC_FLAG "-n" CACHE STRING
           "mpirun flag used to specify the number of processors to use")
       endif()
-
-      # Temporary work around until FindMPI.cmake is fixed: Setting
-      # MPI_<LANG>_COMPILER and MPI_<LANG>_NO_INTERROGATE forces FindMPI to skip
-      # it's bad logic and just rely on the MPI compiler wrapper to do the right
-      # thing. see Bug #467.
-      #
-      # After cmake-3.9.0, this logic probably isn't needed.
-      # foreach( lang C CXX Fortran )
-      #    get_filename_component( CMAKE_${lang}_COMPILER_NOPATH
-      #      "${CMAKE_${lang}_COMPILER}" NAME )
-      #    if( "${CMAKE_${lang}_COMPILER_NOPATH}" MATCHES "^mpi[A-z+]+" )
-      #      get_filename_component( compiler_wo_path "${CMAKE_${lang}_COMPILER}"
-      #        NAME )
-      #      set( MPI_${lang}_COMPILER ${CMAKE_${lang}_COMPILER} )
-      #      set( MPI_${lang}_NO_INTERROGATE ${CMAKE_${lang}_COMPILER} )
-      #    endif()
-      #  endforeach()
 
       # Call the standard CMake FindMPI macro.
       find_package( MPI QUIET )
@@ -420,6 +420,10 @@ macro( setupMPILibrariesUnix )
           "${MPIEXEC_EXECUTABLE}" MATCHES "impi/.*/mic" OR
           "${DBS_MPI_VER}" MATCHES "Intel[(]R[)] MPI Library" )
         setupIntelMPI()
+
+      elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "spectrum-mpi" OR
+          "${MPIEXEC_EXECUTABLE}" MATCHES "jsrun" )
+        setupSpectrumMPI()
 
       elseif( CRAY_PE )
         setupCrayMPI()
