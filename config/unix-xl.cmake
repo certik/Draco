@@ -31,7 +31,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
     string( APPEND CMAKE_C_FLAGS " -qinfo=all -qflags=i:w -qsuppress=1540-0072")
     string( APPEND CMAKE_C_FLAGS " -qsuppress=1506-1197" )
   endif()
-  set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -qcheck -DDEBUG") #-qnosmp
+  set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -DDEBUG") #-qnosmp
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -qhot=novector -qsimd=auto -qstrict=nans:operationprecision -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O3 -qhot=novector -qsimd=auto -qstrict=nans:operationprecision" )
